@@ -1,0 +1,6 @@
+#+TITLE: Numerov Method
+
+* The Physics
+* Numerical Solution
+* Program
+* Analysis
