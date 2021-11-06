@@ -1,6 +1,21 @@
 #+TITLE: Numerov Method
 
 * The Physics
+** Summary of Problem
+We are asked to consider a nucleon trapped in a one-dimensional squared well potential of depth $V_0=83MeV$ and $|x| \leq a$ where $a = 2fm$ ($1fm=10^{-15}m$). We then wish to find the wavefunction for this particle and the energy of the quantum states it inhabits.
+** Analytical Solution
+For our particle, we have the wave function
+#+begin_export latex
+\begin{equation}\label{eq:wave-function}
+\begin{aligned}
+\frac{d^2\Psi}{dx^2} &+ \frac{2m}{\hbar^2}\left(E+V_0)\Psi = 0\\
+\frac{d^2\Psi}{dx^2} &+ k^2(x)\Psi = 0
+\end{aligned}
+\end{equation}
+#+end_export
+Where $k(x) = \sqrt{\frac{2m}{\hbar^2}(E+V_0)}$
+Notice that \ref{eq:wave-function} is of the form of a second order differential equation, missing a first order derivative.
 * Numerical Solution
+
 * Program
 * Analysis
