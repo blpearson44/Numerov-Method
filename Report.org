@@ -62,11 +62,20 @@ Now, we can take the last term of \ref{eq:num-operator} and expand it out as
 #+end_export
 Which we can then rearrange and collect terms to get
 #+begin_export latex
-\begin{equation}\label{eq:psi-plus}
+\begin{equation}\label{eq:psi-h-plus}
 \begin{aligned}
 \Psi(x+h) = \frac{2\left[1 - \frac{5}{12}h^2k^2(x)\right] \Psi(x) - \left[1 + \frac{h^2}{12}k^2(x-h)\right]\Psi(x-h)}{\left[1 + \frac{h^2}{12}k^2(x+h) \right]}
 \end{aligned}
 \end{equation}
 #+end_export
+Or rather, simplifying our notation
+#+begin_export latex
+\begin{equation}\label{eq:psi-plus}
+\begin{aligned}
+\Psi_{i+1} = \frac{\left[1 - \frac{5}{12}h^2k^2_i \right]\Psi_i - \left[1 + \frac{h^2}{12}k^2_{i-1}\right]\Psi_{i-1}}{1 + \frac{h^2}{12}k^2_{i+1}}
+\end{aligned}
+\end{equation}
+#+end_export
+Which gives us an equation to find the following value of the Schrodinger equation. This does rely upon
 * Program
 * Analysis
