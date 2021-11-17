@@ -1,21 +1,72 @@
-#+TITLE: Numerov Method
+#+TITLE: Numerov's Method
 
 * The Physics
 ** Summary of Problem
-We are asked to consider a nucleon trapped in a one-dimensional squared well potential of depth $V_0=83MeV$ and $|x| \leq a$ where $a = 2fm$ ($1fm=10^{-15}m$). We then wish to find the wavefunction for this particle and the energy of the quantum states it inhabits.
+We are asked to consider a nucleon trapped in a one-dimensional squared well potential of depth $V_0=83MeV$ and $|x| \leq a$ where $a = 2fm$ ($1fm=10^{-15}m$). We then wish to find the wave function for this particle and the energy of the quantum states it inhabits. We also say for this problem that $\frac{2m}{\hbar^2}=0.04829MeV^{-1}fm^{-2}$. This project has many similarities to [[https://github.com/blpearson44/Transcendental-Equations][Transcendental Equations]], however our goal with this project is to generalize this solution so we can begin considering varying wells of potential.
 ** Analytical Solution
 For our particle, we have the wave function
 #+begin_export latex
 \begin{equation}\label{eq:wave-function}
 \begin{aligned}
-\frac{d^2\Psi}{dx^2} &+ \frac{2m}{\hbar^2}\left(E+V_0)\Psi = 0\\
+\frac{d^2\Psi}{dx^2} &+ \frac{2m}{\hbar^2}\left(E+V_0\right)\Psi = 0\\
 \frac{d^2\Psi}{dx^2} &+ k^2(x)\Psi = 0
 \end{aligned}
 \end{equation}
 #+end_export
 Where $k(x) = \sqrt{\frac{2m}{\hbar^2}(E+V_0)}$
-Notice that \ref{eq:wave-function} is of the form of a second order differential equation, missing a first order derivative.
+Notice that \ref{eq:wave-function} is of the form of a second order differential equation, missing a first order derivative.  This means that we can apply Numerov's Method. For a more in depth analysis on the analytical portion of this problem, refer to [[https://github.com/blpearson44/Transcendental-Equations/blob/master/Report.pdf][Section I of Transcendental Equations]]. We will delve more deeply into the analytical solution here and how it might be further generalized.
 * Numerical Solution
-
+** Numerov's Method
+Numerov's method is used to solve second order differential equations when it lacks a first order term - as we have showed in \ref{eq:wave-function}. If we have a differential equation of the form
+#+begin_export latex
+\begin{equation}\label{eq:dimensionless-numerov}
+\begin{aligned}
+\frac{d^2y}{dx^2} = -g(x)y(x) + s(x) \quad x \in [a, b]
+\end{aligned}
+\end{equation}
+#+end_export
+Where $g(x)$ and $s(x)$ are continuous from $a$ to $b$. If we take a look at some step size $h$, then we can expand $\Psi(x)$ as a Taylor series
+#+begin_export latex
+\begin{equation}\label{eq:h-step}
+\begin{aligned}
+\Psi(x+h) &= \Psi(x) + h\Psi^{'}(x) + \frac{h^2}{2}\Psi^{''}(x) + \frac{h^3}{3!}\Psi^{'''}(x) + ...\\
+\Psi(x-h) &= \Psi(x) - h\Psi^{'}(x) + \frac{h^2}{2}\Psi{''}(x) - \frac{h^3}{3!}\Psi^{'''}(x) + ...\\
+\Psi(x+h) &+ \Psi(x-h) = 2\Psi(x) + h^2\Psi^{''}(x) + \frac{h^4}{12}\Psi^{iv}(x) + ...
+\end{aligned}
+\end{equation}
+#+end_export
+#+begin_export latex
+\begin{equation}\label{eq:second-derivative}
+\begin{aligned}
+\Psi^{''} = \frac{\Psi(x+h)+\Psi(x-h)-2\Psi(x)}{h^2} - \frac{h^2}{12}\psi^{iv}(x) + O(h^4)
+\end{aligned}
+\end{equation}
+#+end_export
+Since we end up with a final term of the order of $h^4$, if we pick a small enough step size, those terms will drop off quickly and can be ignored.
+Next, we plug this back into the \ref{eq:wave-function} to get
+#+begin_export latex
+\begin{equation}\label{eq:num-operator}
+\begin{aligned}
+\frac{\Psi(x+h) + \Psi(x-h)-2\Psi(x)}{h^2} + k^2\Psi + \frac{h^2}{12}\frac{d^2}{dx^2}\left(k^2\Psi\right) = 0
+\end{aligned}
+\end{equation}
+#+end_export
+Now, we can take the last term of \ref{eq:num-operator} and expand it out as
+#+begin_export latex
+\begin{equation}\label{eq:expanded-stuff}
+\begin{aligned}
+&\frac{h^2}{12}\frac{d^2}{dx^2}(k^2\Psi) =
+\frac{\left[k^2(x+h)\Psi(x+h) -k^2(x)\Psi(x)\right] + \left[k^2(x-h)\Psi(x-h)-k^2(x)\Psi(x)\right]}{h^2}
+\end{aligned}
+\end{equation}
+#+end_export
+Which we can then rearrange and collect terms to get
+#+begin_export latex
+\begin{equation}\label{eq:psi-plus}
+\begin{aligned}
+\Psi(x+h) = \frac{2\left[1 - \frac{5}{12}h^2k^2(x)\right] \Psi(x) - \left[1 + \frac{h^2}{12}k^2(x-h)\right]\Psi(x-h)}{\left[1 + \frac{h^2}{12}k^2(x+h) \right]}
+\end{aligned}
+\end{equation}
+#+end_export
 * Program
 * Analysis
