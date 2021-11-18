@@ -8,8 +8,8 @@ For our particle, we have the wave function
 #+begin_export latex
 \begin{equation}\label{eq:wave-function}
 \begin{aligned}
-\frac{d^2\Psi}{dx^2} &+ \frac{2m}{\hbar^2}\left(E+V_0\right)\Psi = 0\\
-\frac{d^2\Psi}{dx^2} &+ k^2(x)\Psi = 0
+\frac{d^2\psi}{dx^2} &+ \frac{2m}{\hbar^2}\left(E+V_0\right)\psi = 0\\
+\frac{d^2\psi}{dx^2} &+ k^2(x)\psi = 0
 \end{aligned}
 \end{equation}
 #+end_export
@@ -25,20 +25,20 @@ Numerov's method is used to solve second order differential equations when it la
 \end{aligned}
 \end{equation}
 #+end_export
-Where $g(x)$ and $s(x)$ are continuous from $a$ to $b$. If we take a look at some step size $h$, then we can expand $\Psi(x)$ as a Taylor series
+Where $g(x)$ and $s(x)$ are continuous from $a$ to $b$. If we take a look at some step size $h$, then we can expand $\psi(x)$ as a Taylor series
 #+begin_export latex
 \begin{equation}\label{eq:h-step}
 \begin{aligned}
-\Psi(x+h) &= \Psi(x) + h\Psi^{'}(x) + \frac{h^2}{2}\Psi^{''}(x) + \frac{h^3}{3!}\Psi^{'''}(x) + ...\\
-\Psi(x-h) &= \Psi(x) - h\Psi^{'}(x) + \frac{h^2}{2}\Psi{''}(x) - \frac{h^3}{3!}\Psi^{'''}(x) + ...\\
-\Psi(x+h) &+ \Psi(x-h) = 2\Psi(x) + h^2\Psi^{''}(x) + \frac{h^4}{12}\Psi^{iv}(x) + ...
+\psi(x+h) &= \psi(x) + h\psi^{'}(x) + \frac{h^2}{2}\psi^{''}(x) + \frac{h^3}{3!}\psi^{'''}(x) + ...\\
+\psi(x-h) &= \psi(x) - h\psi^{'}(x) + \frac{h^2}{2}\psi{''}(x) - \frac{h^3}{3!}\psi^{'''}(x) + ...\\
+\psi(x+h) &+ \psi(x-h) = 2\psi(x) + h^2\psi^{''}(x) + \frac{h^4}{12}\psi^{iv}(x) + ...
 \end{aligned}
 \end{equation}
 #+end_export
 #+begin_export latex
 \begin{equation}\label{eq:second-derivative}
 \begin{aligned}
-\Psi^{''} = \frac{\Psi(x+h)+\Psi(x-h)-2\Psi(x)}{h^2} - \frac{h^2}{12}\psi^{iv}(x) + O(h^4)
+\psi^{''} = \frac{\psi(x+h)+\psi(x-h)-2\psi(x)}{h^2} - \frac{h^2}{12}\psi^{iv}(x) + O(h^4)
 \end{aligned}
 \end{equation}
 #+end_export
@@ -47,7 +47,7 @@ Next, we plug this back into the \ref{eq:wave-function} to get
 #+begin_export latex
 \begin{equation}\label{eq:num-operator}
 \begin{aligned}
-\frac{\Psi(x+h) + \Psi(x-h)-2\Psi(x)}{h^2} + k^2\Psi + \frac{h^2}{12}\frac{d^2}{dx^2}\left(k^2\Psi\right) = 0
+\frac{\psi(x+h) + \psi(x-h)-2\psi(x)}{h^2} + k^2\psi + \frac{h^2}{12}\frac{d^2}{dx^2}\left(k^2\psi\right) = 0
 \end{aligned}
 \end{equation}
 #+end_export
@@ -55,8 +55,8 @@ Now, we can take the last term of \ref{eq:num-operator} and expand it out as
 #+begin_export latex
 \begin{equation}\label{eq:expanded-stuff}
 \begin{aligned}
-&\frac{h^2}{12}\frac{d^2}{dx^2}(k^2\Psi) =
-\frac{\left[k^2(x+h)\Psi(x+h) -k^2(x)\Psi(x)\right] + \left[k^2(x-h)\Psi(x-h)-k^2(x)\Psi(x)\right]}{h^2}
+&\frac{h^2}{12}\frac{d^2}{dx^2}(k^2\psi) =
+\frac{\left[k^2(x+h)\psi(x+h) -k^2(x)\psi(x)\right] + \left[k^2(x-h)\psi(x-h)-k^2(x)\psi(x)\right]}{h^2}
 \end{aligned}
 \end{equation}
 #+end_export
@@ -64,7 +64,7 @@ Which we can then rearrange and collect terms to get
 #+begin_export latex
 \begin{equation}\label{eq:psi-h-plus}
 \begin{aligned}
-\Psi(x+h) = \frac{2\left[1 - \frac{5}{12}h^2k^2(x)\right] \Psi(x) - \left[1 + \frac{h^2}{12}k^2(x-h)\right]\Psi(x-h)}{\left[1 + \frac{h^2}{12}k^2(x+h) \right]}
+\psi(x+h) = \frac{2\left[1 - \frac{5}{12}h^2k^2(x)\right] \psi(x) - \left[1 + \frac{h^2}{12}k^2(x-h)\right]\psi(x-h)}{\left[1 + \frac{h^2}{12}k^2(x+h) \right]}
 \end{aligned}
 \end{equation}
 #+end_export
@@ -72,10 +72,28 @@ Or rather, simplifying our notation
 #+begin_export latex
 \begin{equation}\label{eq:psi-plus}
 \begin{aligned}
-\Psi_{i+1} = \frac{\left[1 - \frac{5}{12}h^2k^2_i \right]\Psi_i - \left[1 + \frac{h^2}{12}k^2_{i-1}\right]\Psi_{i-1}}{1 + \frac{h^2}{12}k^2_{i+1}}
+\psi_{i+1} = \frac{\left[1 - \frac{5}{12}h^2k^2_i \right]\psi_i - \left[1 + \frac{h^2}{12}k^2_{i-1}\right]\psi_{i-1}}{1 + \frac{h^2}{12}k^2_{i+1}}
 \end{aligned}
 \end{equation}
 #+end_export
-Which gives us an equation to find the following value of the Schrodinger equation. This does rely upon
+Which gives us an equation to find the following value of the Schrodinger equation. Notice that this relies upon the previous two points (that is $i$ and $i-1$), so during our initialization phase we will have to find the first two points before beginning our calculations.
+** Other Methods to be Used
+First, we will initialize the first two points using Euler's method as demonstrated in my [[https://github.com/blpearson44/Pendulum-Simulation][Pendulum Simulation]]. Then, in order to find the Energy $E$ we will guess their initial starting values and then check for convergence around some matching point in the middle - both the derivatives and the values should be identical coming from either side. In other words
+#+begin_export latex
+\begin{equation}\label{eq:matching-point}
+\begin{aligned}
+f(E, x_m) = \frac{d\psi_l}{dx}|_{x_m} - \frac{d\psi_r}{dx}|_{x_m} = 0
+\end{aligned}
+\end{equation}
+#+end_export
+Here we will be choosing a matching point of $x = \pm 2 fm$ which corresponds with $a$.
+If our guessed values bracket the root, we can bisect the values until we find convergence. If they do not we use the slope between the values evaluations to generate a new Energy value - ideally this will then be on the opposite side of the root and then bracketing can begin, however if it does not we simply continue. Refer to \ref{fig:bracketing} for a visual on how this process works.
+#+CAPTION: A graph and table of finding the roots iteratively until bracketing is achieved.
+#+NAME: fig:bracketing
+[[./bracketing.jpg]]
 * Program
+** Flow chart
+#+CAPTION: Flow chart of program
+#+NAME: fig:flow-chart
+[[./flow-chart.png]]
 * Analysis
