@@ -1,0 +1,6 @@
+*.png
+/Pipfile
+/Pipfile.lock
+/Report.html
+/Report.tex
+/__pycache__/
