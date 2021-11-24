@@ -1,4 +1,5 @@
 #+TITLE: Numerov's Method
+#+AUTHOR: Ben Pearson
 
 * The Physics
 ** Summary of Problem
@@ -96,4 +97,151 @@ If our guessed values bracket the root, we can bisect the values until we find c
 #+CAPTION: Flow chart of program
 #+NAME: fig:flow-chart
 [[./flow-chart.png]]
+** Numerov Method
+This program was written in one file because I was interested with whether or not I would prefer it, it ended up clouding my thought process so I may rewrite this into several files for the next project.
+#+begin_src python
+#!/usr/bin/env python3
+"""Iteratively find the wave funciton and energy for a particle."""
+
+# Imports
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants
+V0 = 83  # MeV
+A = 2  # fm
+mesh = np.linspace(
+    -4, 4, 500
+)  # grid is from -4fm to 4fm with 100 equally spaced pieces
+C = 0.04829  # MeV^-1 fm^-2
+# Only used prior to implementation of Energy finding function
+E = -74.876956  # MeV
+
+
+def numerov_method_negative(energy, grid):
+    """Implement Numerov Method at index n to find n+1. From R -> L."""
+    global A
+    dx = grid[1] - grid[0]
+
+    k = np.zeros(grid.size)
+
+    # this will be the wave function when it is run
+    val = np.zeros(grid.size)
+    val[0] = 0
+    val[1] = dx
+
+    h_12 = dx ** 2 / 12
+
+    # to simplify this, I am absorbing h**2/12 into this term
+    k = []
+    for i in range(grid.size):
+        if abs(grid[i]) > A:
+            k.append(h_12 * C * energy)
+        else:
+            k.append(h_12 * C * (energy + V0))
+
+    print(k[0])
+
+    # iterate through the array
+    i = 2
+    while grid[i] < - A:
+        val[i] = 2 * (1 - 5 * k[i-1]) * val[i-1]\
+            - (1 + k[i-2]) * val[i-2]
+        val[i] = val[i]/(1 + k[i+1])
+        i += 1
+
+    val[val == 0] = np.nan
+    return val
+
+
+def numerov_method_positive(energy, grid):
+    """Implement Numerov Method at index n to find n+1. From R -> L."""
+    dx = grid[1] - grid[0]
+
+    k = np.zeros(grid.size)
+
+    # this will be the wave function when it is run
+    val = np.zeros(grid.size)
+    val[-1] = 0
+    val[-2] = dx
+
+    h_12 = dx ** 2 / 12
+
+    # to simplify this, I am absorbing h**2/12 into this term
+    k = []
+    for i in range(grid.size):
+        if abs(grid[i]) > A:
+            k.append(h_12 * C * energy)
+        else:
+            k.append(h_12 * C * (energy + V0))
+
+    print(k[0])
+
+    # iterate through the array
+    i = grid.size - 3
+    while grid[i] > -A:
+        val[i] = 2 * (1 - 5 * k[i+1]) * val[i+1]\
+            - (1 + k[i+2]) * val[i+2]
+        val[i] = val[i]/(1 + k[i-1])
+        i -= 1
+
+    val[val == 0] = np.nan
+    return val
+
+
+
+# data processing
+
+# graphs
+plt.style.use('ggplot')
+
+fig = plt.figure(
+    figsize=(9, 6),
+    dpi=300
+)
+
+test_energies = [-80, -70, -74, -75]
+axes = [plt.subplot(2, 2, i+1) for i in range(4)]
+for i in range(4):
+    ax = axes[i]
+    ax.set_title(f"E = {test_energies[i]}MeV")
+    psi = numerov_method_positive(test_energies[i], mesh)
+    psi2 = numerov_method_negative(test_energies[i], mesh)
+    ax.plot(
+        mesh, psi,
+        ls='none',
+        ms=4,
+        marker='.',
+        mew=1.0,
+        zorder=1,
+    )
+    ax.plot(
+        mesh, psi2,
+        ls='none',
+        ms=4,
+        marker='.',
+        mew=1.0,
+        zorder=1,
+    )
+    ax.set_xlabel('x', labelpad=5)
+    ax.set_ylabel(r'$\Psi$', labelpad=5)
+fig.tight_layout()
+fig.suptitle("n = 500")
+plt.savefig('500-mismatch-energies.png')
+plt.show()
+#+end_src
 * Analysis
+Seeing varying timesteps around the correct energy doesn't do as much justice as to the effect that the time step carries. To see that we need to consider the guesses.
+#+CAPTION: Correct energy across 3 different time steps
+#+NAME: fig:c-energy
+[[./correct-energy.png]]
+Here we have three separate counts, 500, 100, and 10. Each one is graphed across 4 different energy guesses. As is shown, the more timesteps we use not only the clearer the graph but also the easier it is to tell the accuracy. This makes larger timesteps easier to converge and easier to guess correct energies because they are clearer. However, once we surpass 100 timesteps (in this case), we find that there is little to be gained in terms of clarity, unless we desire even more accuracy.
+#+CAPTION: Energies when the space is divided 10 different times
+#+NAME: fig:10-energy
+[[./10-mismatch-energies.png]]
+#+CAPTION: Energies when the space is divided 100 different times
+#+NAME: fig:100-energy
+[[./100-mismatch-energies.png]]
+#+CAPTION: Energies when the space is divided 500 different times
+#+NAME: fig:500-energy
+[[./500-mismatch-energies.png]]
