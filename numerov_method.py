@@ -12,7 +12,7 @@ A = 2  # fm
 C = 0.04829  # MeV^-1 fm^-2
 
 
-def create_karr(energy: float, grid: np.linspace) -> list:
+def create_karr(energy: float, grid: np.ndarray) -> list:
     """Create array for K**2 at each point in grid."""
     dx = grid[0] - grid[1]
     h_12 = dx ** 2 / 12
@@ -25,18 +25,18 @@ def create_karr(energy: float, grid: np.linspace) -> list:
     return arr
 
 
-def numerov_method_forward(energy: float, grid: np.linspace) -> np.linspace:
+def numerov_method_forward(energy: float, grid: np.ndarray) -> np.ndarray:
     """Implement Numerov Method at index n to find n+1. From R -> L."""
     global A
     k = create_karr(energy, grid)
     # this will be the wave function when it is run
     val = np.zeros(grid.size)
     val[0] = 0
-    val[1] = 0.1
+    val[1] = grid[1] - grid[0]
 
     # iterate through the array
     i = 2
-    while grid[i] < A:
+    while grid[i] <= A:
         val[i] = 2 * (1 - 5 * k[i-1]) * val[i-1]\
             - (1 + k[i-2]) * val[i-2]
         val[i] = val[i]/(1 + k[i+1])
@@ -46,26 +46,44 @@ def numerov_method_forward(energy: float, grid: np.linspace) -> np.linspace:
     return val
 
 
-def numerov_method_backward(energy: float, grid: np.linspace) -> np.linspace:
+def numerov_method_backward(energy: float, grid: np.ndarray) -> np.ndarray:
     """Implement Numerov Method at index n to find n+1. From L -> R."""
     global A
     k = create_karr(energy, grid)
     # this will be the wave function when it is run
     val = np.zeros(grid.size)
     val[-1] = 0
-    val[-2] = 0.1
+    val[-2] = grid[1] - grid[0]
 
     # iterate through the array
     i = grid.size - 3
-    while grid[i] > A:
+    while grid[i+1] >= A:
         val[i] = 2 * (1 - 5 * k[i+1]) * val[i+1]\
             - (1 + k[i+2]) * val[i+2]
-        val[i] = val[i]/(1 + k[i-1])
+        val[i] = val[i]/(1 + k[i+1])
         i -= 1
 
     val[val == 0] = np.nan
     return val
 
+
+# TODO make this work
+def numerov_convergence(energy: float, grid: np.ndarray) -> bool:
+    """Test for convergence at energy."""
+    global A
+    psi_forward = numerov_method_forward(energy, grid)
+    psi_backward = numerov_method_backward(energy, grid)
+    # find index of A in the ndarray
+    matching_pt = np.searchsorted(grid, A)
+    print(f'{matching_pt = }')
+    print(f'{grid[matching_pt] = }')
+    print(f'{psi_forward[matching_pt] = }')
+    print(f'{psi_backward[matching_pt] = }')
+    if np.isclose(psi_backward[matching_pt], psi_forward[matching_pt]):
+        return True
+    elif np.isclose(- psi_backward[matching_pt], psi_forward[matching_pt]):
+        return True
+    return False
 
 # data processing
 # graphs
@@ -73,6 +91,7 @@ plt.style.use('ggplot')
 
 
 test_energies = [-74.876956, -51.282727, -16.0313114]
+grid = np.linspace(-4, 4, 257)
 n = [10, 100, 500]
 for energy in test_energies:
     fig = plt.figure(
